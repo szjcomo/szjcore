@@ -9,9 +9,7 @@
             "email": "814655481@qq.com"
         }
     ],
-    "require": {
-	"php": ">=7.1.0",
-    },
+    "require": {},
     "autoload":{
         "psr-4":{
             "szjcomo\\szjcore\\":"src/szjcomo/szjcore"
