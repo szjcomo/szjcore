@@ -1,0 +1,18 @@
+{
+    "name": "szjcomo/szjcore",
+    "description": "Framework based on easyswoole",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "como",
+            "email": "814655481@qq.com"
+        }
+    ],
+    "require": {},
+    "autoload":{
+        "psr-4":{
+            "szjcomo\\szjcore\\":"src/szjcomo/szjcore"
+        }
+    }
+}
