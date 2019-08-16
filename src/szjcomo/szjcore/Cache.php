@@ -50,7 +50,7 @@ Class Cache {
 	 * @param     integer    $expire  [以秒作为单位时间]
 	 * @param     float      $timeout [description]
 	 */
-	Public static function set($key,$value = null,$expire = 0,$timeout = 1.0){
+	Public static function set($key,$value = null,$expire = null,$timeout = 1.0){
 		$setCount = 0;
 		if(empty($key)) return $setCount;
 		if(!empty($value)){
