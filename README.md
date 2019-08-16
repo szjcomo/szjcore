@@ -1,2 +1,2 @@
-# szjswoolephp
-思智捷swoole框架封装
+# szjcore
+思智捷科技基本easyswoole框架封装
