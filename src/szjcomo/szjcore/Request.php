@@ -83,8 +83,12 @@ Class Request{
 	 * @return    [type]     [description]
 	 */
 	Public static function getip(easyRequest $request){
-		$fd = $request->getSwooleRequest()->fd;
-		return ServerManager::getInstance()->getSwooleServer()->getClientInfo($fd)['remote_ip'];
+        $ip = $request->getHeader('x-real-ip')[0];
+        if(empty($ip)){
+            $fd = $request->getSwooleRequest()->fd;
+            $ip = ServerManager::getInstance()->getSwooleServer()->getClientInfo($fd)['remote_ip'];
+        }
+		return $ip;
 	}
     /**
      * [put 获取put数据]

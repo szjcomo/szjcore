@@ -23,6 +23,7 @@ Class Context {
 	 * 获取easyRequest
 	 */
 	Private $context;
+
 	/**
 	 * [__construct 构造函数]
 	 * @Author    como
@@ -34,6 +35,7 @@ Class Context {
 	Public function __construct(easyRequest $request,easyResponse $response){
 		$this->context = ['req'=>$request,'res'=>$response];
 	}
+
 	/**
 	 * [isPost 判断是否post请求]
 	 * @Author    como
