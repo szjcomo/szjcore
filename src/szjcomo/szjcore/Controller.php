@@ -140,7 +140,7 @@ Class Controller extends easyController{
 	 * @return    [type]           [description]
 	 */
 	Public function appResult($info = '',$data = null,$err = true){
-		return return ['info'=>$info,'data'=>$data,'err'=>$err];
+		return ['info'=>$info,'data'=>$data,'err'=>$err];
 	}
 	
 	
