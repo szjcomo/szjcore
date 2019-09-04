@@ -22,5 +22,11 @@
         "psr-4":{
             "szjcomo\\szjcore\\":"src/szjcomo/szjcore"
         }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
     }
 }

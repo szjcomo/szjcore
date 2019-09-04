@@ -28,25 +28,7 @@ Class Mysql {
 	 * @param     string     $prefix    [description]
 	 * @return    [type]                [description]
 	 */
-	Public static function DB(){
-		return easyMysql::getInstance()->pool('mysql')::defer();
+	Public static function DB(string $name = 'mysql0'){
+		return easyMysql::getInstance()->pool($name)::defer();
 	}
-	/**
-	 * [table 获取表名称]
-	 * @Author    como
-	 * @DateTime  2019-08-14
-	 * @copyright 思智捷管理系统
-	 * @version   [1.5.0]
-	 * @param     string     $tableName [description]
-	 * @param     [type]     $prefix    [description]
-	 * @param     boolean    $bool      [description]
-	 * @return    [type]                [description]
-	 */
-	Public static function table($tableName = '',$prefix = null){
-		if(empty($prefix)){
-			$prefix = Config::get('MYSQL.prefix');
-		}
-		return trim($prefix).trim($tableName);
-	}
-
 }
