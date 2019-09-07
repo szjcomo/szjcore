@@ -220,7 +220,7 @@ Class Context {
 			} else {
 				return $this->appResult('不是一个文件对象,无法操作文件指针');
 			}			
-		} catch(\Exception $err){
+		} catch(\Throwable $err){
 			return $this->appResult($err->getMessage());
 		}
 	}

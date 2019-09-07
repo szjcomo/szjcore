@@ -14,7 +14,7 @@
 	"topthink/think-template": "^2.0",
 	"topthink/think-image": "^1.0",
 	"easyswoole/session": "^1.0",
-        "easyswoole/easyswoole": "3.x",
+        "easyswoole/easyswoole": "3.2.6",
         "easyswoole/fast-cache": "^1.1",
         "easyswoole/mysqli-pool": "^1.0"
     },
