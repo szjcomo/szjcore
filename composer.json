@@ -16,7 +16,7 @@
         "easyswoole/easyswoole": "3.2.6",
         "easyswoole/fast-cache": "^1.1",
         "easyswoole/mysqli-pool": "^1.0",
-        "szjcomo/phputils": "^0.0.2"
+        "szjcomo/phputils": "0.0.*"
     },
     "autoload":{
         "psr-4":{
