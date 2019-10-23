@@ -13,7 +13,7 @@
 namespace szjcomo\szjcore;
 
 //使用mysql链接池进行mysql操作
-use EasySwoole\MysqliPool\Mysql as easyMysql;
+use szjcomo\mysqliPool\Mysql as szjcomoMysql;
 /**
  * 再次封装mysql查询功能
  */
@@ -29,6 +29,6 @@ Class Mysql {
 	 * @return    [type]                [description]
 	 */
 	Public static function DB(string $name = 'mysql0'){
-		return easyMysql::getInstance()->pool($name)::defer();
+		return szjcomoMysql::defer($name);
 	}
 }
