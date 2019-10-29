@@ -17,7 +17,7 @@ use EasySwoole\Http\AbstractInterface\Controller as easyController;
 use EasySwoole\Http\Message\Status;
 use szjcomo\szjcore\Router;
 use szjcomo\szjcore\Context;
-use EasySwoole\EasySwoole\Config;
+use EasySwoole\EasySwoole\Config as esConfig;
 // session相关
 use EasySwoole\Session\FileSessionHandler;
 use EasySwoole\Session\SessionDriver;
@@ -48,23 +48,23 @@ use EasySwoole\Session\SessionDriver;
 class Controller extends easyController
 {
 
-	/**
-	 * 请求环境的上下文
-	 */
-	protected $context;
+    /**
+     * 请求环境的上下文
+     */
+    protected $context;
     /**
      * session
      */
     protected $_session;
-	/**
-	 * [index 实现默认index方法]
-	 * @Author    como
-	 * @DateTime  2019-08-09
-	 * @copyright 思智捷管理系统
-	 * @version   [1.5.0]
-	 * @return    [type]     [description]
-	 */
-	public function index(){}
+    /**
+     * [index 实现默认index方法]
+     * @Author    como
+     * @DateTime  2019-08-09
+     * @copyright 思智捷管理系统
+     * @version   [1.5.0]
+     * @return    [type]     [description]
+     */
+    public function index(){}
 
     /**
      * [session session]
@@ -78,7 +78,7 @@ class Controller extends easyController
      */
     public function session($key = null,$val = '')
     {
-        $this->sessionHandler(Config::getInstance()->get('SESSION'));
+        $this->sessionHandler(esConfig::getInstance()->getConf('SESSION'));
         if(!empty($key) && is_null($val)) {
             return $this->_session->unset($key);
         } else if(!empty($key) && !empty($val)) {
@@ -90,6 +90,16 @@ class Controller extends easyController
             return $this->_session->destroy();
         }
         return false;
+    }
+    /**
+     * [session_id 获取自身的session_id]
+     * @author        szjcomo
+     * @createTime 2019-10-29
+     * @return     [type]     [description]
+     */
+    public function session_id()
+    {
+        return $this->_session->sessionId();
     }
 
     /**
@@ -133,57 +143,57 @@ class Controller extends easyController
         }
     }
 
-	/**
-	 * [appResult 全局统一使用的默认返回值]
-	 * @Author    como
-	 * @DateTime  2019-08-09
-	 * @copyright 思智捷管理系统
-	 * @version   [1.5.0]
-	 * @param     string     $info [description]
-	 * @param     [type]     $data [description]
-	 * @param     boolean    $err  [description]
-	 * @return    [type]           [description]
-	 */
-	public function appResult($info = '',$data = null,$err = true)
+    /**
+     * [appResult 全局统一使用的默认返回值]
+     * @Author    como
+     * @DateTime  2019-08-09
+     * @copyright 思智捷管理系统
+     * @version   [1.5.0]
+     * @param     string     $info [description]
+     * @param     [type]     $data [description]
+     * @param     boolean    $err  [description]
+     * @return    [type]           [description]
+     */
+    public function appResult($info = '',$data = null,$err = true)
     {
-		return ['info'=>$info,'data'=>$data,'err'=>$err];
-	}
+        return ['info'=>$info,'data'=>$data,'err'=>$err];
+    }
 
-	/**
-	 * [appJson 返回json数据]
-	 * @Author    como
-	 * @DateTime  2019-08-09
-	 * @copyright 思智捷管理系统
-	 * @version   [1.5.0]
-	 * @param     array      $data [description]
-	 * @param     integer    $code [description]
-	 * @return    [type]           [description]
-	 */
-	public function appJson($data = [],$code = 200)
+    /**
+     * [appJson 返回json数据]
+     * @Author    como
+     * @DateTime  2019-08-09
+     * @copyright 思智捷管理系统
+     * @version   [1.5.0]
+     * @param     array      $data [description]
+     * @param     integer    $code [description]
+     * @return    [type]           [description]
+     */
+    public function appJson($data = [],$code = 200)
     {
-		return $this->writeJson($code,$data);
-	}
-	/**
-	 * [writeJson 重写json响应数据]
-	 * @Author    como
-	 * @DateTime  2019-08-09
-	 * @copyright 思智捷管理系统
-	 * @version   [1.5.0]
-	 * @param     integer    $statusCode [description]
-	 * @param     [type]     $result     [description]
-	 * @param     [type]     $msg        [description]
-	 * @return    [type]                 [description]
-	 */
+        return $this->writeJson($code,$data);
+    }
+    /**
+     * [writeJson 重写json响应数据]
+     * @Author    como
+     * @DateTime  2019-08-09
+     * @copyright 思智捷管理系统
+     * @version   [1.5.0]
+     * @param     integer    $statusCode [description]
+     * @param     [type]     $result     [description]
+     * @param     [type]     $msg        [description]
+     * @return    [type]                 [description]
+     */
     protected function writeJson($statusCode = 200, $result = null, $msg = null)
     {
         if (!$this->response()->isEndResponse()) {
-        	try{
-	            $this->response()->write(json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        	} catch(\Exception $err){
-        		$data = $this->appResult($err->getMessage(),$result);
-        		$this->response()->write(json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        		$statusCode = 500;
-        	}
+            try{
+                $this->response()->write(json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            } catch(\Exception $err){
+                $data = $this->appResult($err->getMessage(),$result);
+                $this->response()->write(json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                $statusCode = 500;
+            }
             $this->response()->withHeader('Content-type', 'application/json;charset=utf-8');
             $this->response()->withStatus($statusCode);
             return true;
@@ -201,8 +211,8 @@ class Controller extends easyController
      */
     public function initialize()
     {
-    	/*注意：如果为false 则不继续往下执行了 可用作权限处理 token认证等功能*/
-    	return true;
+        /*注意：如果为false 则不继续往下执行了 可用作权限处理 token认证等功能*/
+        return true;
     }
     /**
      * [onRequest 前置拉截装置]
@@ -214,8 +224,8 @@ class Controller extends easyController
      */
     public function onRequest(?string $action): ?bool
     {
-    	$this->context = new Context($this->request(),$this->response());
-    	return $this->initialize();
+        $this->context = new Context($this->request(),$this->response());
+        return $this->initialize();
     }
     /**
      * [onException 重写异常功能]
@@ -226,9 +236,9 @@ class Controller extends easyController
      * @param     \Throwable $throwable [description]
      * @return    [type]                [description]
      */
-	protected function onException(\Throwable $err): void
+    protected function onException(\Throwable $err): void
     {
-       	$this->appJson($this->appResult($err->getMessage()));
+        $this->appJson($this->appResult($err->getMessage()));
     }
     /**
      * [actionNotFound 空操作]
@@ -254,7 +264,7 @@ class Controller extends easyController
      */
     public function _empty($action)
     {
-    	return $this->appJson($this->appResult($action.' method action is not found'));
+        return $this->appJson($this->appResult($action.' method action is not found'));
     }
     /**
      * [gc 垃圾回收机制]
