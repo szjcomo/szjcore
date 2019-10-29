@@ -12,15 +12,15 @@
  */
 
 namespace szjcomo\szjcore;
-/**
- * 接收原生的response类
- */
+
 use EasySwoole\Http\Response as easyResponse;
 use EasySwoole\Http\Message\Status;
+
 /**
  * 自定义响应类
  */
-Class Response {
+class Response 
+{
 
 	/**
 	 * [header description]
@@ -30,7 +30,8 @@ Class Response {
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public static function setHeader($name, $value,easyResponse $response){
+	public static function setHeader($name, $value,easyResponse $response)
+	{
 		$response->withHeader($name,$value);
 		$response->withHeader('server','szjkj');
 		return true;
@@ -49,13 +50,14 @@ Class Response {
 	 * @param     boolean    $secure   [description]
 	 * @param     boolean    $httponly [description]
 	 */
-	Public static function setCookie($name, $value = null, $expire = null, $path = '/', $domain = '', $secure = false, $httponly = false,easyResponse $response){
+	public static function setCookie($name, $value = null, $expire = null, $path = '/', $domain = '', $secure = false, $httponly = false,easyResponse $response)
+	{
 		if(empty($name)) return false;
-		if(is_null($value)){
+		if(is_null($value)) {
 			return $response->setCookie($name,$value,$expire,$path,$domain,$secure,$httponly);
 		}
 		$strValue = '';
-		if(!is_array($value) || !is_object($value)){
+		if(!is_array($value) || !is_object($value)) {
 			$value['___szjtype'] = 'json';
 			$strValue = json_encode($value,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		}
@@ -72,7 +74,8 @@ Class Response {
 	 * @param     easyResponse $response [description]
 	 * @return    [type]                 [description]
 	 */
-	Public static function redirect($url,$status = Status::CODE_MOVED_TEMPORARILY,easyResponse $response){
+	public static function redirect($url,$status = Status::CODE_MOVED_TEMPORARILY,easyResponse $response)
+	{
 		return $response->redirect($url,$status);
 	}
 

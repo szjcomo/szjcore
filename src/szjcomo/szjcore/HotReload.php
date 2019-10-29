@@ -27,6 +27,7 @@
 *-----------------------------------------------------------------------------------
 */
 namespace szjcomo\szjcore;
+
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\Utility\File;
@@ -34,12 +35,14 @@ use EasySwoole\EasySwoole\Logger;
 use Swoole\Process;
 use Swoole\Table;
 use Swoole\Timer;
+
 /**
  * 暴力热重载
  * Class HotReload
  * @package App\Process
  */
-class HotReload extends AbstractProcess {
+class HotReload extends AbstractProcess 
+{
     protected $table;
     protected $isReady = false;
     protected $monitorDir; // 需要监控的目录
@@ -47,7 +50,8 @@ class HotReload extends AbstractProcess {
     /**
      * 启动定时器进行循环扫描
      */
-    public function run($arg){
+    public function run($arg)
+    {
         // 此处指定需要监视的目录 建议只监视App目录下的文件变更
         $this->monitorDir = !empty($arg['monitorDir']) ? $arg['monitorDir'] : EASYSWOOLE_ROOT . '/Application';
         // 指定需要监控的扩展名 不属于指定类型的的文件 无视变更 不重启
@@ -131,7 +135,8 @@ class HotReload extends AbstractProcess {
      * @DateTime 2019-09-25
      * @return   [type]     [description]
      */
-    private function registerInotifyEvent(){
+    private function registerInotifyEvent()
+    {
         // 因为进程独立 且当前是自定义进程 全局变量只有该进程使用
         // 在确定不会造成污染的情况下 也可以合理使用全局变量
         global $lastReloadTime;

@@ -16,10 +16,12 @@ use EasySwoole\Http\AbstractInterface\AbstractRouter;
 use FastRoute\RouteCollector;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+
 /**
  * 自定义路由功能
  */
-class Routers extends AbstractRouter{
+class Routers extends AbstractRouter
+{
 	/**
 	 * [initialize 实现路由初始化功能]
 	 * @Author    como
@@ -29,7 +31,8 @@ class Routers extends AbstractRouter{
 	 * @param     RouteCollector $routeCollector [description]
 	 * @return    [type]                         [description]
 	 */
-	function initialize(RouteCollector $routeCollector){
+	public function initialize(RouteCollector $routeCollector)
+	{
 		try{
 			call_user_func([&$this,'_registerRouter'],$routeCollector);
 		} catch(\Exception $err){
@@ -45,6 +48,7 @@ class Routers extends AbstractRouter{
 	 * @param     [type]     $route [description]
 	 * @return    [type]            [description]
 	 */
-	Protected static function _registerRouter($route){}
+	Protected static function _registerRouter($route)
+	{}
 
 }

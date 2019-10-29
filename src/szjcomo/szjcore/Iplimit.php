@@ -11,21 +11,24 @@
  * |-----------------------------------------------------------------------------------
  */
 namespace szjcomo\szjcore;
+
 use EasySwoole\Component\Singleton;
 use EasySwoole\Component\TableManager;
 use Swoole\Table;
 use EasySwoole\EasySwoole\Logger;
+
 /**
  * 对访问IP进行限制
  */
-Class Iplimit{
+class Iplimit
+{
     /** @var Table */
-    Protected $table;
+    protected $table;
     /**
      * [$error 发生错误时提示信息]
      * @var string
      */
-    Protected $error = 'IP限流的table为空,请管理员检查';
+    protected $error = 'IP限流的table为空,请管理员检查';
     /**
      * 使用单例模式
      */
@@ -37,7 +40,8 @@ Class Iplimit{
 	 * @copyright 思智捷管理系统
 	 * @version   [1.5.0]
 	 */
-	Public function __construct(){
+	public function __construct()
+	{
         TableManager::getInstance()->add('ipList', [
             'ip' => [
                 'type' => Table::TYPE_STRING,
@@ -62,7 +66,8 @@ Class Iplimit{
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public function clear(){
+	public function clear()
+	{
 		if($this->table){
 	        foreach ($this->table as $key => $item){
 	            $this->table->del($key);
@@ -80,7 +85,8 @@ Class Iplimit{
 	 * @param     string     $ip [description]
 	 * @return    [type]         [description]
 	 */
-    Public function access(string $ip):int{
+    public function access(string $ip):int
+    {
     	if($this->table){
 	        $key  = substr(md5($ip), 8,16);
 	        $info = $this->table->get($key);

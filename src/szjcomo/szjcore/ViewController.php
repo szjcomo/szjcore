@@ -11,17 +11,20 @@
  * |-----------------------------------------------------------------------------------
  */
 namespace szjcomo\szjcore;
+
 use szjcomo\szjcore\Controller;
 use EasySwoole\EasySwoole\Config;
 use think\Template;
+
 /**
  * 继承自Controller控制器
  */
-Class ViewController extends Controller{
+class ViewController extends Controller
+{
 	/**
 	 * 视频模版
 	 */
-	Protected $view;
+	protected $view;
 	/**
 	 * [__construct 调用模版引擎]
 	 * @Author    como
@@ -29,7 +32,8 @@ Class ViewController extends Controller{
 	 * @copyright 思智捷管理系统
 	 * @version   [1.5.0]
 	 */
-	Public function __construct(){
+	public function __construct()
+	{
 		$this->init();
 		parent::__construct();
 	}
@@ -41,7 +45,8 @@ Class ViewController extends Controller{
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-    Public function init(){
+    public function init()
+    {
         $this->view             = new Template();
         $tempPath               = Config::getInstance()->getConf('TEMP_DIR');     # 临时文件目录
         $this->view->config(['view_path' => EASYSWOOLE_ROOT . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR,'cache_path' => "{$tempPath}/cache/"]);
@@ -54,7 +59,8 @@ Class ViewController extends Controller{
      * @param array        $config 额外的渲染配置
      * @author : evalor <master@evalor.cn>
      */
-    Public function fetch($template = null, $vars = [], $config = []){
+    public function fetch($template = null, $vars = [], $config = [])
+    {
         ob_start();
         $this->view->fetch($template, $vars, $config);
         $content = ob_get_clean();

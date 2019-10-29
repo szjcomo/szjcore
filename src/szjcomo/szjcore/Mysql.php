@@ -17,7 +17,8 @@ use szjcomo\mysqliPool\Mysql as szjcomoMysql;
 /**
  * 再次封装mysql查询功能
  */
-Class Mysql {
+class Mysql 
+{
 	/**
 	 * [name 获取表名]
 	 * @Author    como
@@ -28,7 +29,8 @@ Class Mysql {
 	 * @param     string     $prefix    [description]
 	 * @return    [type]                [description]
 	 */
-	Public static function DB(string $name = 'mysql0'){
+	public static function DB(string $name = 'mysql0')
+	{
 		return szjcomoMysql::defer($name);
 	}
 }

@@ -11,19 +11,19 @@
  * |-----------------------------------------------------------------------------------
  */
 namespace szjcomo\szjcore;
-/**
- * 使用定时器类
- */
+
 use EasySwoole\Component\Timer;
+
 /**
  * 自定义定时器
  */
-Class Timers {
+class Timers 
+{
 	/**
 	 * [$callbackClass 定时器任务回调类]
 	 * @var string
 	 */
-	Public static $callbackClass 	= '\App\common\ExtendsCallback';
+	public static $callbackClass 	= '\App\common\ExtendsCallback';
 	/**
 	 * [addTimer 执行多次的定时器]
 	 * @Author    como
@@ -31,15 +31,16 @@ Class Timers {
 	 * @copyright 思智捷管理系统
 	 * @version   [1.5.0]
 	 */
-	Public static function setInterval($callback = null,$microSeconds = 5000,$params = [],$callbackClass = null){
-		if(!empty($callback) && is_callable($callback)){
+	public static function setInterval($callback = null,$microSeconds = 5000,$params = [],$callbackClass = null)
+	{
+		if(!empty($callback) && is_callable($callback)) {
 			return Timer::getInstance()->loop($microSeconds,$callback);
-		} else if(!empty($callback) && is_string($callback)){
+		} else if(!empty($callback) && is_string($callback)) {
 			if(empty($callbackClass)) $callbackClass = self::$callbackClass;
 			$callFun = function() use($callbackClass,$callback,$params){
 				if(class_exists($callbackClass)){
 					$obj = new \ReflectionClass($callbackClass);
-					if($obj->hasMethod($callback)){
+					if($obj->hasMethod($callback)) {
 						try{
 							call_user_func([$callbackClass,$callback],$params);
 						} catch(\Exception $err){
@@ -63,7 +64,8 @@ Class Timers {
 	 * @param     integer    $timerId [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function clearInterval($timerId = 0){
+	public static function clearInterval($timerId = 0)
+	{
 		if($timerId < 0) return false;
 		return Timer::getInstance()->clear($timerId);
 	}
@@ -78,15 +80,16 @@ Class Timers {
 	 * @param     integer    $microSeconds  [定时执行的时间]
 	 * @param     [type]     $callbackClass [执行回调的类名]
 	 */
-	Public static function setTimeout($callback = null,$microSeconds = 5000,$params = [],$callbackClass = null){
-		if(!empty($callback) && is_callable($callback)){
+	public static function setTimeout($callback = null,$microSeconds = 5000,$params = [],$callbackClass = null)
+	{
+		if(!empty($callback) && is_callable($callback)) {
 			return Timer::getInstance()->after($microSeconds,$callback);
-		} elseif(!empty($callback) && is_string($callback)){
+		} elseif(!empty($callback) && is_string($callback)) {
 			if(empty($callbackClass)) $callbackClass = self::$callbackClass;
 			$callFun = function() use($callbackClass,$callback,$params){
-				if(class_exists($callbackClass)){
+				if(class_exists($callbackClass)) {
 					$obj = new \ReflectionClass($callbackClass);
-					if($obj->hasMethod($callback)){
+					if($obj->hasMethod($callback)) {
 						try{
 							call_user_func([$callbackClass,$callback],$params);
 						} catch(\Exception $err){

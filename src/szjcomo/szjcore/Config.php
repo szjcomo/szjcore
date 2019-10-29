@@ -11,11 +11,14 @@
  * |-----------------------------------------------------------------------------------
  */
 namespace szjcomo\szjcore;
+
 use EasySwoole\EasySwoole\Config as easyConfig;
+
 /**
  * 自定义config配置类
  */
-Class Config {
+class Config 
+{
 	/**
 	 * [get 获取项目配置文件]
 	 * @Author    como
@@ -25,7 +28,8 @@ Class Config {
 	 * @param     [type]     $key [description]
 	 * @return    [type]          [description]
 	 */
-	Public static function get($key = null){
+	public static function get($key = null)
+	{
 		return easyConfig::getInstance()->getConf($key);
 	}
 	/**
@@ -37,7 +41,8 @@ Class Config {
 	 * @param     [type]     $key [description]
 	 * @param     [type]     $val [description]
 	 */
-	Public static function set($key, $val){
+	public static function set($key, $val)
+	{
 		return easyConfig::getInstance()->setConf($key,$val);
 	}
 }

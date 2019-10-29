@@ -11,21 +11,15 @@
  * |-----------------------------------------------------------------------------------
  */
 namespace szjcomo\szjcore;
-/**
- * 使用原生的request
- */
+
 use EasySwoole\Http\Request as easyRequest;
 use EasySwoole\EasySwoole\ServerManager;
+
 /**
  * 继承自request
  */
-Class Request{
-    /**
-     * 全局过滤规则
-     * @var array
-     */
-    Protected static $filter;
-
+class Request
+{
 	/**
 	 * [get 获取get请求参数]
 	 * @Author    como
@@ -34,11 +28,10 @@ Class Request{
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public static function get($name = '', $default = null, $filter = '',easyRequest $request){
-		if(empty($name)) return $request->getQueryParams();
-		$data = $request->getQueryParams();
-		if(empty($data)) return $default;
-		return self::input($data,$name,$default,$filter);
+	public static function get($name = '', $default = null, $filter = '',easyRequest $request)
+    {
+        $data = $request->getQueryParams();
+        return self::input($data,$name,$default,$filter);
 	}
 	/**
 	 * [post 获取post请求参数]
@@ -51,11 +44,19 @@ Class Request{
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function post($name = '', $default = null, $filter = '',easyRequest $request){
-		if(empty($name)) return $request->getParsedBody();
-		$data = $request->getParsedBody();
-		if(empty($data)) return $default;
-		return self::input($data,$name,$default,$filter);
+	public static function post($name = '', $default = null, $filter = '',easyRequest $request)
+    {
+        $data = $request->getParsedBody();
+        if(empty($data)) {
+            $header = $request->getHeader('content-type');
+            $reg = '/\s?application\/json/';
+            if(!empty($header) && is_array($header) && !empty(preg_match($reg, $header[0]))) {
+                $dataString = $request->getBody()->__toString();
+                $jsonData = json_decode($dataString,true);
+                if(!empty($jsonData) && is_array($jsonData)) $data = $jsonData;                
+            }
+        }
+        return self::input($data,$name,$default,$filter);
 	}
 	/**
 	 * [param 获取get/post请求参数]
@@ -68,10 +69,14 @@ Class Request{
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function param($name = '', $default = null, $filter = '',easyRequest $request){
-		if(empty($name)) return $request->getRequestParam();
-		$data = $request->getRequestParam();
-		if(empty($data)) return $default;
+	public static function param($name = '', $default = null, $filter = '',easyRequest $request)
+    {
+        $data = $request->getRequestParam();
+        $putdata = $request->getBody()->__toString();
+        if(!empty($putdata)) {
+            $tmpdata = json_decode($putdata,true);
+            if(!empty($tmpdata) && is_array($tmpdata)) $data = array_merge($data,$tmpdata);
+        }
 		return self::input($data,$name,$default,$filter);
 	}
 	/**
@@ -82,9 +87,10 @@ Class Request{
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public static function getip(easyRequest $request){
+	public static function getip(easyRequest $request)
+    {
         $ips = $request->getHeader('x-real-ip');
-        if(empty($ips)){
+        if(empty($ips)) {
             $fd = $request->getSwooleRequest()->fd;
             $ip = ServerManager::getInstance()->getSwooleServer()->getClientInfo($fd)['remote_ip'];
         } else {
@@ -104,7 +110,8 @@ Class Request{
      * @param     easyRequest $request [description]
      * @return    [type]               [description]
      */
-    Public static function put($name = '', $default = null, $filter = '',easyRequest $request){
+    public static function put($name = '', $default = null, $filter = '',easyRequest $request)
+    {
         $data = $request->getBody()->__toString();
         return $data;
     }
@@ -119,7 +126,8 @@ Class Request{
      * @param     easyRequest $request [description]
      * @return    [type]               [description]
      */
-    Public static function uploads($name = null,easyRequest $request){
+    public static function uploads($name = null,easyRequest $request)
+    {
         $uploadFile = null;
         if(empty($name)) {
             $uploadFile = $request->getUploadedFiles();
@@ -130,111 +138,69 @@ Class Request{
     }
 
     /**
-     * 获取变量 支持过滤和默认值
-     * @access public
-     * @param  array         $data 数据源
-     * @param  string|false  $name 字段名
-     * @param  mixed         $default 默认值
-     * @param  string|array  $filter 过滤函数
-     * @return mixed
+     * [input 进行数据安全过滤]
+     * @author        szjcomo
+     * @createTime 2019-10-28
+     * @param      array      $data    [description]
+     * @param      string     $name    [description]
+     * @param      [type]     $default [description]
+     * @param      [type]     $filter  [description]
+     * @return     [type]              [description]
      */
-    Public static function input($data = [], $name = '', $default = null, $filter = ''){
-        if (false === $name) {
-            // 获取原始数据
-            return $data;
-        }
-        $name = (string) $name;
-        if ('' != $name) {
-            $data = self::getData($data, $name);
-            if (is_null($data)) {
-                return $default;
+    public static function input($data = [],string $name = '',$default = null,$filter = null)
+    {
+        if(false === $name) return $data;
+        if(empty($filter)) $filter = Config::get('default_filter');
+        $tmp = [];
+        $callback = function($item,$key) use($filter,&$tmp){
+            $tmp[$key] = call_user_func($filter,$item);
+        };
+        if('' !== $name) {
+            $value = self::getData($data,$name);
+            if(is_null($value)) return $default;
+            if(is_array($value)) {
+                self::array_recursive($value,$tmp,$filter);
+                return $tmp;
             }
-            if (is_object($data)) {
-                return $data;
-            }
+            return call_user_func($filter,$value);
         }
-        // 解析过滤器
-        $filter = self::getFilter($filter, $default);
-        if (is_array($data)) {
-            array_walk_recursive($data, [self, 'filterValue'], $filter);
-        } else {
-            self::filterValue($data, $name, $filter);
-        }
-        return $data;
+        self::array_recursive($data,$tmp,$filter);
+        return $tmp;
     }
+
+    /**
+     * [array_recursive description]
+     * @author        szjcomo
+     * @createTime 2019-10-28
+     * @param      array      $arr    [description]
+     * @param      array      $result [description]
+     * @param      [type]     $filter [description]
+     * @return     [type]             [description]
+     */
+    public static function array_recursive(array $arr,array &$result,$filter = '')
+    {
+        foreach($arr as $key=>$val){
+            if(is_array($val)) {
+                $result[$key] = [];
+                self::array_recursive($val,$result[$key],$filter);
+            } else {
+                $result[$key] = call_user_func($filter,$val);
+            }
+        }
+    }
+
+
     /**
      * [getData 获取数据]
-     * @Author    como
-     * @DateTime  2019-08-13
-     * @copyright 思智捷管理系统
-     * @version   [1.5.0]
-     * @param     array      $data [description]
-     * @param     [type]     $name [description]
-     * @return    [mixed]           [description]
+     * @author        szjcomo
+     * @createTime 2019-10-28
+     * @param      array      $data [description]
+     * @param      string     $name [description]
+     * @return     [type]           [description]
      */
-    Protected static function getData(array $data, $name){
-        foreach (explode('.', $name) as $val) {
-            if (isset($data[$val])) {
-                $data = $data[$val];
-            } else {
-                return;
-            }
-        }
-        return $data;
-    }
-    /**
-     * [getFilter 获取数据过滤规则]
-     * @Author    como
-     * @DateTime  2019-08-13
-     * @copyright 思智捷管理系统
-     * @version   [1.5.0]
-     * @param     [type]     $filter  [description]
-     * @param     [type]     $default [description]
-     * @return    [type]              [description]
-     */
-    Protected static function getFilter($filter, $default){
-    	if(empty(self::$filter)){
-    		self::$filter = Config::get('default_filter');
-    	}
-        if (is_null($filter)) {
-            $filter = [];
-        } else {
-            $filter = $filter ?: self::$filter;
-            if (is_string($filter) && false === strpos($filter, '/')) {
-                $filter = explode(',', $filter);
-            } else {
-                $filter = (array) $filter;
-            }
-        }
-        $filter[] = $default;
-        return $filter;
-    }
-    /**
-     * 递归过滤给定的值
-     * @access public
-     * @param  mixed     $value 键值
-     * @param  mixed     $key 键名
-     * @param  array     $filters 过滤方法+默认值
-     * @return mixed
-     */
-    Private static function filterValue(&$value, $key, $filters){
-        $default = array_pop($filters);
-        foreach ($filters as $filter) {
-            if (is_callable($filter)) {
-                // 调用函数或者方法过滤
-                $value = call_user_func($filter, $value);
-            }
-        }
-        return $value;
-    }
-    /**
-     * [__destruct 析构函数]
-     * @Author    como
-     * @DateTime  2019-08-13
-     * @copyright 思智捷管理系统
-     * @version   [1.5.0]
-     */
-    Public function __destruct(){
-    	self::$filter = null;
+    public static function getData(array $data,string $name)
+    {
+        if(isset($data[$name])) return $data[$name];
+        return null;
     }
 }

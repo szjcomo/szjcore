@@ -12,21 +12,20 @@
  */
 
 namespace szjcomo\szjcore;
-/**
- * 任务投递
- */
+
 use EasySwoole\EasySwoole\Swoole\Task\AbstractAsyncTask;
 use EasySwoole\EasySwoole\Swoole\Task\TaskManager;
-use szjcomo\phputils\Tools;
+
 /**
  * 自定义任务模版类
  */
-Class Task extends AbstractAsyncTask{
+class Task extends AbstractAsyncTask
+{
 	/**
 	 * [$callbackClass 任务模版回调类]
 	 * @var string
 	 */
-	Public static $callbackClass 	= '\App\common\ExtendsCallback';
+	public static $callbackClass 	= '\App\common\ExtendsCallback';
 
 	/**
 	 * [addTask 添加一个任务模版]
@@ -39,7 +38,8 @@ Class Task extends AbstractAsyncTask{
 	 * @param     array      $params   [description]
 	 * @param     boolean    $static   [description]
 	 */
-	Public static function addTask($callback = null,$params = [],$className = null){
+	public static function addTask($callback = null,$params = [],$className = null)
+	{
 		if(empty($className)) $className = self::$callbackClass;
 		$taskClass = new self(['class'=>$className,'callback'=>$callback,'params'=>$params]);
 		return TaskManager::async($taskClass);
@@ -56,18 +56,19 @@ Class Task extends AbstractAsyncTask{
 	 * @param     [type]     $flags        [description]
 	 * @return    [type]                   [description]
 	 */
-	Protected function run($taskData,$taskId,$fromWorkerId,$flags = null){
-		$result = Tools::appResult('任务执行失败,请遵守框架定义的任务模版进行任务配置或使用原生的任务投递方式');
+	protected function run($taskData,$taskId,$fromWorkerId,$flags = null)
+	{
+		$result = self::appResult('任务执行失败,请遵守框架定义的任务模版进行任务配置或使用原生的任务投递方式');
 		if(is_array($taskData) && !empty($taskData['class']) && !empty($taskData['callback'])){
-			if(class_exists($taskData['class'])){
+			if(class_exists($taskData['class'])) {
 				$obj = new \ReflectionClass($taskData['class']);
-				if($obj->hasMethod($taskData['callback'])){
+				if($obj->hasMethod($taskData['callback'])) {
 					$result = call_user_func([$taskData['class'],$taskData['callback']],$taskData['params']);
 				} else {
-					$result = Tools::appResult($taskData['class'].' method '.$taskData['callback'].' is not found');
+					$result = self::appResult($taskData['class'].' method '.$taskData['callback'].' is not found');
 				}
 			} else {
-				$result = Tools::appResult($taskData['class'].' is not found');
+				$result = self::appResult($taskData['class'].' is not found');
 			}
 		}
 		return $result;
@@ -84,5 +85,21 @@ Class Task extends AbstractAsyncTask{
 	 * @param     [type]     $task_id [description]
 	 * @return    [type]              [description]
 	 */
-	Protected function finish($result,$task_id){}
+	protected function finish($result,$task_id)
+	{}
+	/**
+	 * [appResult 统一返回值]
+	 * @author 	   szjcomo
+	 * @createTime 2019-10-26
+	 * @param      string     $info  [description]
+	 * @param      [type]     $data  [description]
+	 * @param      boolean    $err   [description]
+	 * @param      integer    $error [description]
+	 * @return     [type]            [description]
+	 */
+	protected static function appResult(string $info,$data = null,$err = true,$error = 0)
+	{
+		return ['info'=>$info,'data'=>$data,'err'=>$err,'error'=>$error];
+	}
+
 }

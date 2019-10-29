@@ -12,6 +12,7 @@
  */
 
 namespace szjcomo\szjcore;
+
 use EasySwoole\Http\AbstractInterface\Controller as easyController;
 use EasySwoole\Http\Message\Status;
 use szjcomo\szjcore\Router;
@@ -44,16 +45,17 @@ use EasySwoole\Session\SessionDriver;
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
 //         佛祖保佑       永无BUG       永不修改                     //
 ////////////////////////////////////////////////////////////////////
-Class Controller extends easyController{
+class Controller extends easyController
+{
 
 	/**
 	 * 请求环境的上下文
 	 */
-	Protected $context;
+	protected $context;
     /**
      * session
      */
-    Protected $_session;
+    protected $_session;
 	/**
 	 * [index 实现默认index方法]
 	 * @Author    como
@@ -62,7 +64,7 @@ Class Controller extends easyController{
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public function index(){}
+	public function index(){}
 
     /**
      * [session session]
@@ -74,16 +76,17 @@ Class Controller extends easyController{
      * @param     string     $val [description]
      * @return    [type]          [description]
      */
-    Public function session($key = null,$val = ''){
+    public function session($key = null,$val = '')
+    {
         $this->sessionHandler(Config::getInstance()->get('SESSION'));
-        if(!empty($key) && is_null($val)){
+        if(!empty($key) && is_null($val)) {
             return $this->_session->unset($key);
-        } else if(!empty($key) && !empty($val)){
+        } else if(!empty($key) && !empty($val)) {
             return $this->_session->set($key,$val);
-        } else if(!empty($key) && empty($val)){
+        } else if(!empty($key) && empty($val)) {
             return $this->_session->get($key);
         }
-        if(is_null($key) && is_null($val)){
+        if(is_null($key) && is_null($val)) {
             return $this->_session->destroy();
         }
         return false;
@@ -98,12 +101,13 @@ Class Controller extends easyController{
      * @param     array      $config [description]
      * @return    [type]             [description]
      */
-    Protected function _FileSessionHandler($config = []){
+    protected function _FileSessionHandler($config = [])
+    {
         $handler = new FileSessionHandler();
         $this->_session = new SessionDriver($handler,$this->request(),$this->response());
         $this->_session->savePath($config['path']);
         $this->_session->sessionName($config['prefix']);
-        if(!empty($config['auto_start'])){
+        if(!empty($config['auto_start'])) {
             $this->_session->start();
         }
     }
@@ -116,9 +120,10 @@ Class Controller extends easyController{
      * @param     array      $config [description]
      * @return    [type]             [description]
      */
-    Private function sessionHandler($conf = []){
+    private function sessionHandler($conf = [])
+    {
         $defaultConfig = ['driver'=>'File','path'=>'./session','auto_start'=>true,'prefix' =>'szjkj'];
-        if($this->_session == null && is_array($conf)){
+        if($this->_session == null && is_array($conf)) {
             $config = array_merge($defaultConfig,$conf);
             switch ($config['driver']) {
                 case 'File':
@@ -139,11 +144,10 @@ Class Controller extends easyController{
 	 * @param     boolean    $err  [description]
 	 * @return    [type]           [description]
 	 */
-	Public function appResult($info = '',$data = null,$err = true){
+	public function appResult($info = '',$data = null,$err = true)
+    {
 		return ['info'=>$info,'data'=>$data,'err'=>$err];
 	}
-	
-	
 
 	/**
 	 * [appJson 返回json数据]
@@ -155,7 +159,8 @@ Class Controller extends easyController{
 	 * @param     integer    $code [description]
 	 * @return    [type]           [description]
 	 */
-	Public function appJson($data = [],$code = 200){
+	public function appJson($data = [],$code = 200)
+    {
 		return $this->writeJson($code,$data);
 	}
 	/**
@@ -169,7 +174,8 @@ Class Controller extends easyController{
 	 * @param     [type]     $msg        [description]
 	 * @return    [type]                 [description]
 	 */
-    Protected function writeJson($statusCode = 200, $result = null, $msg = null){
+    protected function writeJson($statusCode = 200, $result = null, $msg = null)
+    {
         if (!$this->response()->isEndResponse()) {
         	try{
 	            $this->response()->write(json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
@@ -193,7 +199,8 @@ Class Controller extends easyController{
      * @version   [1.5.0]
      * @return    [type]     [description]
      */
-    Public function initialize(){
+    public function initialize()
+    {
     	/*注意：如果为false 则不继续往下执行了 可用作权限处理 token认证等功能*/
     	return true;
     }
@@ -205,7 +212,8 @@ Class Controller extends easyController{
      * @version   [1.5.0]
      * @return    [type]     [description]
      */
-    Public function onRequest(?string $action): ?bool{
+    public function onRequest(?string $action): ?bool
+    {
     	$this->context = new Context($this->request(),$this->response());
     	return $this->initialize();
     }
@@ -218,7 +226,8 @@ Class Controller extends easyController{
      * @param     \Throwable $throwable [description]
      * @return    [type]                [description]
      */
-	Protected function onException(\Throwable $err): void{
+	protected function onException(\Throwable $err): void
+    {
        	$this->appJson($this->appResult($err->getMessage()));
     }
     /**
@@ -230,7 +239,8 @@ Class Controller extends easyController{
      * @param     string     $action [description]
      * @return    [type]             [description]
      */
-    Protected function actionNotFound(?string $action): void{
+    protected function actionNotFound(?string $action): void
+    {
         $this->_empty($action);
         return;
     }
@@ -242,7 +252,8 @@ Class Controller extends easyController{
      * @version   [1.5.0]
      * @return    [type]     [description]
      */
-    Public function _empty($action){
+    public function _empty($action)
+    {
     	return $this->appJson($this->appResult($action.' method action is not found'));
     }
     /**
@@ -253,11 +264,12 @@ Class Controller extends easyController{
      * @version   [1.5.0]
      * @return    [type]     [description]
      */
-    Protected function gc(){
-        if($this->context){
+    protected function gc()
+    {
+        if($this->context) {
             $this->context = null;
         }
-        if(!empty($this->_session)){
+        if(!empty($this->_session)) {
             $this->_session->close();
             $this->_session = null;            
         }

@@ -12,17 +12,18 @@
  */
 
 namespace szjcomo\szjcore;
-/**
- * 使用原生的request
- */
+
 use EasySwoole\Http\Request as easyRequest;
 use EasySwoole\Http\Response as easyResponse;
 use EasySwoole\Utility\File;
-Class Context {
+
+
+class Context 
+{
 	/**
 	 * 获取easyRequest
 	 */
-	Private $context;
+	private $context;
 
 	/**
 	 * [__construct 构造函数]
@@ -32,7 +33,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @param     easyRequest $request [description]
 	 */
-	Public function __construct(easyRequest $request,easyResponse $response){
+	public function __construct(easyRequest $request,easyResponse $response)
+	{
 		$this->context = ['req'=>$request,'res'=>$response];
 	}
 
@@ -44,7 +46,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function method(){
+	public function method()
+	{
 		$action = $this->context['req']->getMethod();
 		return $action;
 	}
@@ -56,7 +59,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function isGet(){
+	public function isGet()
+	{
 		return $this->method() == 'GET';
 	}
 	/**
@@ -67,7 +71,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function isPost(){
+	public function isPost()
+	{
 		return $this->method() == 'POST';
 	}
 	/**
@@ -78,7 +83,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function isAjax(){
+	public function isAjax()
+	{
 		return false;
 	}
 	/**
@@ -89,7 +95,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function isPut(){
+	public function isPut()
+	{
 		return $this->method() == 'PUT';
 	}
 	/**
@@ -100,7 +107,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    boolean    [description]
 	 */
-	Public function isDelete(){
+	public function isDelete()
+	{
 		return $this->method() == 'DELETE';
 	}
 
@@ -115,7 +123,8 @@ Class Context {
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public function put(){
+	public function put()
+	{
 		return Request::put(null,null,null,$this->context['req']);
 	}
 	/**
@@ -128,11 +137,12 @@ Class Context {
 	 * @param     [type]     $options [description]
 	 * @return    [type]              [description]
 	 */
-	Public function uploads($name = null,$options = []){
+	public function uploads($name = null,$options = [])
+	{
 		$data = Request::uploads($name,$this->context['req']);
 		if(empty($data)) return $this->appResult('没有文件被上传');
 		$result = [];
-		if(is_array($data)){
+		if(is_array($data)) {
 			foreach($data as $key=>$val){
 				$res = $this->uploadsHandler($val,$options,$key);
 				$tempName = $val->getTempName();
@@ -161,7 +171,8 @@ Class Context {
 	 * @param     boolean    $err  [description]
 	 * @return    [type]           [description]
 	 */
-	Public function appResult($info = '',$data = null,$err = true){
+	public function appResult($info = '',$data = null,$err = true)
+	{
 		return ['info'=>$info,'data'=>$data,'err'=>$err];
 	}
 	/**
@@ -173,21 +184,22 @@ Class Context {
 	 * @param     [type]     $uploadFile [description]
 	 * @return    [type]                 [description]
 	 */
-	Public function uploadsHandler($uploadFile,$options = [],$fileName = ''){
+	public function uploadsHandler($uploadFile,$options = [],$fileName = '')
+	{
 		$defaultOptions = [
 			'limitSize'=>2*1024*1024,'savePath'=>'./','saveName'=>'','ext'=>['jpg','png','jpeg','gif','bmp'],
 			'fileType'=>['image/jpeg','image/png','image/gif','image/bmp','image/jpg'],
 		];
 		$map = array_merge($defaultOptions,$options);
 		try{
-			if(is_object($uploadFile)){
+			if(is_object($uploadFile)) {
 				$streamtmp = $uploadFile->getStream();
 				$fileSize = $uploadFile->getSize();
-				if($fileSize > $map['limitSize']){
+				if($fileSize > $map['limitSize']) {
 					return $this->appResult('上传的文件大小超过了'.$map['limitSize'].'个字节的限制');
 				}
 				$ext = $this->getFileNameExt($uploadFile->getClientFilename());
-				if(!in_array($ext, $map['ext'])){
+				if(!in_array($ext, $map['ext'])) {
 					return $this->appResult('上传的文件后缀不合法,请检查');
 				}
 				$fileType = $uploadFile->getClientMediaType();
@@ -195,15 +207,15 @@ Class Context {
 					return $this->appResult('上传的文件类型不合法,请检查');
 				}
 				$file_exists_true = false;
-				if(!file_exists($map['savePath'])){
+				if(!file_exists($map['savePath'])) {
 					$file_exists_true = File::createDirectory($map['savePath']);
 				} else {
 					$file_exists_true = true;
 				}
-				if($file_exists_true !== true){
+				if($file_exists_true !== true) {
 					return $this->appResult('指定的文件保存路径无法创建成功,请进行权限检查');
 				}
-				if(empty($map['saveName'])){
+				if(empty($map['saveName'])) {
 					$map['saveName'] = date('YmdHis').mt_rand(100000,999999).'.'.$ext;
 				} else {
 					if(!stripos($map['saveName'],'.')){
@@ -211,7 +223,7 @@ Class Context {
 					}
 				}
 				$action = $uploadFile->moveTo($map['savePath'].$map['saveName']);
-				if($action){
+				if($action) {
 					$tmp = ['savePath'=>$map['savePath'],'saveName'=>$map['saveName'],'size'=>$fileSize,'type'=>$fileType,'ext'=>$ext,'inputName'=>$fileName];
 					return $this->appResult('SUCCESS',$tmp,false);
 				} else {
@@ -233,9 +245,10 @@ Class Context {
 	 * @param     string     $fileName [description]
 	 * @return    [type]               [description]
 	 */
-	Public function getFileNameExt($fileName = ''){
+	public function getFileNameExt($fileName = '')
+	{
 		$data = pathinfo($fileName);
-		if(!empty($data) && !empty($data['extension'])){
+		if(!empty($data) && !empty($data['extension'])) {
 			return $data['extension'];
 		}
 		return '';
@@ -253,7 +266,8 @@ Class Context {
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public function get($name = '', $default = null, $filter = ''){
+	public function get($name = '', $default = null, $filter = '')
+	{
 		return Request::get($name,$default,$filter,$this->context['req']);
 	}
 	/**
@@ -267,7 +281,8 @@ Class Context {
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public function post($name = '',$default = null,$filter = ''){
+	public function post($name = '',$default = null,$filter = '')
+	{
 		return Request::post($name,$default,$filter,$this->context['req']);
 	}
 	/**
@@ -281,7 +296,8 @@ Class Context {
 	 * @param     string     $filter  [description]
 	 * @return    [type]              [description]
 	 */
-	Public function param($name = '',$default = null,$filter = ''){
+	public function param($name = '',$default = null,$filter = '')
+	{
 		return Request::param($name,$default,$filter,$this->context['req']);
 	}
 	/**
@@ -292,7 +308,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public function getip(){
+	public function getip()
+	{
 		return Request::getip($this->context['req']);
 	}
 	/**
@@ -310,8 +327,9 @@ Class Context {
 	 * @param     boolean    $httponly [description]
 	 * @return    [type]               [description]
 	 */
-	Public function cookie($name = null, $value = '', $expire = null, $path = '/', $domain = '', $secure = false, $httponly = false){
-		if(!empty($name) && is_null($value)){
+	public function cookie($name = null, $value = '', $expire = null, $path = '/', $domain = '', $secure = false, $httponly = false)
+	{
+		if(!empty($name) && is_null($value)) {
 			if(is_null($expire)) $expire = time() - 3600;
 			return Response::setCookie($name,$value,$expire,$path,$domain,$secure,$httponly,$this->context['res']);
 		}
@@ -331,12 +349,13 @@ Class Context {
 	 * @param     [type]     $data [description]
 	 * @return    [type]           [description]
 	 */
-	Protected function cookieHandler($data){
+	protected function cookieHandler($data)
+	{
 		if(empty($data)) return $data;
 		if(is_array($data)){
 			$result = [];
 			$callback = function($value,$key) use(&$result){
-				if(strpos($value, '___szjtype')){
+				if(strpos($value, '___szjtype')) {
 					$result[$key] = json_decode($value,true);
 				}
 			};
@@ -344,7 +363,7 @@ Class Context {
 			if(isset($result['___szjtype'])) unset($result['___szjtype']);
 			return $result;
 		} else {
-			if(stripos($data, '___szjtype')){
+			if(stripos($data, '___szjtype')) {
 				$tmp = json_decode($data,true);
 				if(isset($tmp['___szjtype'])) unset($tmp['___szjtype']);
 				return $tmp;
@@ -363,7 +382,8 @@ Class Context {
 	 * @param     [type]     $value [description]
 	 * @return    [type]            [description]
 	 */
-	Public function header($name = null,$value = null){
+	public function header($name = null,$value = null)
+	{
 		if(empty($value)) {
 			if(empty($name)) return $this->context['req']->getHeaders();
 			return $this->context['req']->getHeader($name);
@@ -380,7 +400,8 @@ Class Context {
 	 * @param     integer    $code [description]
 	 * @return    [type]           [description]
 	 */
-	Public function redirect($url,$code = 302){
+	public function redirect($url,$code = 302)
+	{
 		return Response::redirect($url,$code,$this->context['res']);
 	}
 	/**
@@ -391,7 +412,8 @@ Class Context {
 	 * @version   [1.5.0]
 	 * @return    [type]     [description]
 	 */
-	Public function _servers(){
+	public function _servers()
+	{
 		return $this->context['req']->getServerParams();
 	}
 }

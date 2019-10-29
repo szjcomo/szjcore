@@ -12,11 +12,14 @@
  */
 
 namespace szjcomo\szjcore;
+
 use EasySwoole\FastCache\Cache as easyCache;
+
 /**
  * 缓存类
  */
-Class Cache {
+class Cache 
+{
 	/**
 	 * [get 读取轻量级缓存]
 	 * @Author    como
@@ -27,12 +30,13 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function get($key = null,$timeout = 1.0){
-		if(empty($key)){
+	public static function get($key = null,$timeout = 1.0)
+	{
+		if(empty($key)) {
 			$key = self::keys($timeout);
 		}
 		$result = null;
-		if(is_array($key)){
+		if(is_array($key)) {
 			$result = self::getAll($key,$timeout);
 		} else {
 			$result = easyCache::getInstance()->get($key,$timeout);
@@ -50,10 +54,11 @@ Class Cache {
 	 * @param     integer    $expire  [以秒作为单位时间]
 	 * @param     float      $timeout [description]
 	 */
-	Public static function set($key,$value = null,$expire = null,$timeout = 1.0){
+	public static function set($key,$value = null,$expire = null,$timeout = 1.0)
+	{
 		$setCount = 0;
 		if(empty($key)) return $setCount;
-		if(!empty($value)){
+		if(!empty($value)) {
 			if(is_array($key) && (count($key) == count($value))){
 				$setCount = self::setAll($key,$value,$expire,$timeout);
 			} else if(is_string($key)) {
@@ -77,7 +82,8 @@ Class Cache {
 	 * @param     integer    $expire  [description]
 	 * @param     float      $timeout [description]
 	 */
-	Public static function setAll($keys = [],$value = [],$expire = 0,$timeout = 1.0){
+	public static function setAll($keys = [],$value = [],$expire = 0,$timeout = 1.0)
+	{
 		$setCount = 0;
 		if(count($keys) == count($value)){
 			foreach ($keys as $key => $val) {
@@ -98,7 +104,8 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function del($key,$timeout = 1.0){
+	public static function del($key,$timeout = 1.0)
+	{
 		if(empty($key)) return null;
 		return easyCache::getInstance()->unset($key,$timeout);
 	}
@@ -111,11 +118,12 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function clear($bool = false,$timeout = 1.0){
+	public static function clear($bool = false,$timeout = 1.0)
+	{
 		$clearCount = 0;
 		if($bool === true){
 			$keys = easyCache::getInstance()->keys();
-			if(!empty($keys) && is_array($keys)){
+			if(!empty($keys) && is_array($keys)) {
 				foreach ($keys as $key => $value) {
 					self::del($value,$timeout);
 					$clearCount++;
@@ -133,7 +141,8 @@ Class Cache {
 	 * @param     array      $keys [description]
 	 * @return    [type]           [description]
 	 */
-	Public static function getAll($keys = [],$timeout = 1.0){
+	public static function getAll($keys = [],$timeout = 1.0)
+	{
 		$result = [];
 		foreach($keys as $key=>$val){
 			$result[] = easyCache::getInstance()->get($val);
@@ -149,7 +158,8 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function keys($timeout = 1.0){
+	public static function keys($timeout = 1.0)
+	{
 		$arr = easyCache::getInstance()->keys();
 		return empty($arr)?[]:$arr;
 	}
@@ -162,7 +172,8 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function count($timeout = 1.0){
+	public static function count($timeout = 1.0)
+	{
 		$keys = self::keys();
 		return count($keys);
 	}
@@ -176,7 +187,8 @@ Class Cache {
 	 * @param     float      $timeout [description]
 	 * @return    [type]              [description]
 	 */
-	Public static function getExpire($key = null,$timeout = 1.0){
+	public static function getExpire($key = null,$timeout = 1.0)
+	{
 		if(empty($key)) return null;
 		return easyCache::getInstance()->ttl($key,$timeout);
 	}
