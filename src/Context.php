@@ -3,21 +3,20 @@
  * |-----------------------------------------------------------------------------------
  * @Copyright (c) 2014-2018, http://www.sizhijie.com. All Rights Reserved.
  * @Website: www.sizhijie.com
- * @Version: 思智捷管理系统 1.5.0
- * @Author : como 
- * 版权申明：szjshop网上管理系统不是一个自由软件，是思智捷科技官方推出的商业源码，严禁在未经许可的情况下
- * 拷贝、复制、传播、使用szjshop网店管理系统的任意代码，如有违反，请立即删除，否则您将面临承担相应
- * 法律责任的风险。如果需要取得官方授权，请联系官方http://www.sizhijie.com
+ * @Version: 思智捷信息科技有限公司
+ * @Author : szjcomo 
  * |-----------------------------------------------------------------------------------
  */
 
 namespace szjcomo\szjcore;
 
-use EasySwoole\Http\Request as easyRequest;
-use EasySwoole\Http\Response as easyResponse;
+use EasySwoole\Http\Request as EasySwooleRequest;
+use EasySwoole\Http\Response as EasySwooleResponse;
 use EasySwoole\Utility\File;
 
-
+/**
+ * 请求上下文
+ */
 class Context 
 {
 	/**
@@ -33,7 +32,7 @@ class Context
 	 * @version   [1.5.0]
 	 * @param     easyRequest $request [description]
 	 */
-	public function __construct(easyRequest $request,easyResponse $response)
+	public function __construct(EasySwooleRequest $request,EasySwooleResponse $response)
 	{
 		$this->context = ['req'=>$request,'res'=>$response];
 	}
@@ -171,9 +170,9 @@ class Context
 	 * @param     boolean    $err  [description]
 	 * @return    [type]           [description]
 	 */
-	public function appResult($info = '',$data = null,$err = true)
+	public function appResult($info = '',$data = null,$err = true,int $code = 0)
 	{
-		return ['info'=>$info,'data'=>$data,'err'=>$err];
+		return ['info'=>$info,'data'=>$data,'err'=>$err,'code'=>$code];
 	}
 	/**
 	 * [uploadsHandler 文上传处理类]
@@ -188,9 +187,16 @@ class Context
 	{
 		$defaultOptions = [
 			'limitSize'=>2*1024*1024,'savePath'=>'./','saveName'=>'','ext'=>['jpg','png','jpeg','gif','bmp'],
-			'fileType'=>['image/jpeg','image/png','image/gif','image/bmp','image/jpg'],
+			'fileType'=>['image/jpeg','image/png','image/gif','image/bmp','image/jpg','application/octet-stream'],
 		];
-		$map = array_merge($defaultOptions,$options);
+		$map = [];
+		foreach($defaultOptions as $key=>$val){
+			if(is_array($val)){
+				$map[$key] = array_merge($val,isset($options[$key])?$options[$key]:[]);
+			} else {
+				$map[$key] = isset($options[$key])?$options[$key]:$val;
+			}
+		}
 		try{
 			if(is_object($uploadFile)) {
 				$streamtmp = $uploadFile->getStream();

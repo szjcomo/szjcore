@@ -8,25 +8,27 @@
  * |-----------------------------------------------------------------------------------
  */
 
-namespace szjcomo\szjcore;
+namespace szjcomo\szjcore\register;
 
-use EasySwoole\FastCache\Cache as EasySwooleCache;
+use EasySwoole\FastCache\Cache;
 use EasySwoole\FastCache\CacheProcessConfig;
 use EasySwoole\FastCache\SyncData;
 use EasySwoole\Utility\File;
 
+
 /**
- * fastcache 类增加文件存档功能
+ * 内置缓存文件保存和加载
  */
-class CacheExtends 
+class FastCacheFile
 {
 	/**
 	 * 设置配置项
 	 */
 	protected static  $CONFIG = [
 		//数据写入频率 默认为每隔5秒检查写入一次
-		'write_time_rate'=>5,
-		'write_path'=>''
+		'WRITE_TIME_RACE'=>5,
+		//设置内置缓存目录
+		'WRITE_CACHE_PATH'=>''
 	];
 
 	/**
@@ -39,13 +41,13 @@ class CacheExtends
 	{
 		$conf = array_merge(self::$CONFIG,$config);
 		//设置检查频率
-		self::setWriteRate($conf['write_time_rate']);
+		self::setWriteRate($conf['WRITE_TIME_RACE']);
 		//开启定时检查写入数据
-		self::writeCacheData($conf['write_path']);
+		self::writeCacheData($conf['WRITE_CACHE_PATH']);
 		//服务器停止时写入数据
-		self::stopWriteCacheData($conf['write_path']);
+		self::stopWriteCacheData($conf['WRITE_CACHE_PATH']);
 		//服务器启动时需要加载数据
-		self::loadCacheData($conf['write_path']);
+		self::loadCacheData($conf['WRITE_CACHE_PATH']);
 	}
 	/**
 	 * [loadCacheData 启动时加载缓存]
@@ -58,7 +60,7 @@ class CacheExtends
 	{
 		if(empty($cachePath)) $cachePath = EASYSWOOLE_TEMP_DIR . '/FastCacheData/';
         // 启动时将存回的文件重新写入
-        EasySwooleCache::getInstance()->setOnStart(function (CacheProcessConfig $cacheProcessConfig) use ($cachePath) {
+        Cache::getInstance()->setOnStart(function (CacheProcessConfig $cacheProcessConfig) use ($cachePath) {
             $path = $cachePath. $cacheProcessConfig->getProcessName();
             if(is_file($path)){
                 $data = unserialize(file_get_contents($path));
@@ -86,7 +88,7 @@ class CacheExtends
 	protected static function setWriteRate(int $writetime = 5)
 	{
         // 每隔5秒将数据存回文件
-        EasySwooleCache::getInstance()->setTickInterval($writetime * 1000);//设置定时频率
+        Cache::getInstance()->setTickInterval($writetime * 1000);//设置定时频率
 	}
 	/**
 	 * [stopWriteCacheData 服务器停止时写入文件]
@@ -99,7 +101,7 @@ class CacheExtends
 	{
 		if(empty($writepath)) $writepath = EASYSWOOLE_TEMP_DIR . '/FastCacheData/';
         // 在守护进程时,php easyswoole stop 时会调用,落地数据
-        EasySwooleCache::getInstance()->setOnShutdown(function (SyncData $SyncData, CacheProcessConfig $cacheProcess) use ($writepath) {
+        Cache::getInstance()->setOnShutdown(function (SyncData $SyncData, CacheProcessConfig $cacheProcess) use ($writepath) {
             $data = [
                 'data'  => $SyncData->getArray(),
                 'queue' => $SyncData->getQueueArray(),
@@ -125,7 +127,7 @@ class CacheExtends
 	protected static function writeCacheData(string $writepath = '')
 	{
 		if(empty($writepath)) $writepath = EASYSWOOLE_TEMP_DIR . '/FastCacheData/';
-        EasySwooleCache::getInstance()->setOnTick(function (SyncData $SyncData, CacheProcessConfig $cacheProcess) use($writepath) {
+        Cache::getInstance()->setOnTick(function (SyncData $SyncData, CacheProcessConfig $cacheProcess) use($writepath) {
             $data = [
                 'data'  => $SyncData->getArray(),
                 'queue' => $SyncData->getQueueArray(),
@@ -141,5 +143,4 @@ class CacheExtends
             File::createFile($path,serialize($data));
         });
 	}
-
 }

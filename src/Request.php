@@ -3,24 +3,22 @@
  * |-----------------------------------------------------------------------------------
  * @Copyright (c) 2014-2018, http://www.sizhijie.com. All Rights Reserved.
  * @Website: www.sizhijie.com
- * @Version: 思智捷管理系统 1.5.0
- * @Author : como 
- * 版权申明：szjshop网上管理系统不是一个自由软件，是思智捷科技官方推出的商业源码，严禁在未经许可的情况下
- * 拷贝、复制、传播、使用szjshop网店管理系统的任意代码，如有违反，请立即删除，否则您将面临承担相应
- * 法律责任的风险。如果需要取得官方授权，请联系官方http://www.sizhijie.com
+ * @Version: 思智捷信息科技有限公司
+ * @Author : szjcomo 
  * |-----------------------------------------------------------------------------------
  */
+
 namespace szjcomo\szjcore;
 
 use EasySwoole\Http\Request as easyRequest;
 use EasySwoole\EasySwoole\ServerManager;
 
 /**
- * 继承自request
+ * http 请求处理
  */
 class Request
 {
-	/**
+/**
 	 * [get 获取get请求参数]
 	 * @Author    como
 	 * @DateTime  2019-08-13
@@ -150,7 +148,7 @@ class Request
     public static function input($data = [],string $name = '',$default = null,$filter = null)
     {
         if(false === $name) return $data;
-        if(empty($filter)) $filter = Config::get('default_filter');
+        if(empty($filter)) $filter = 'htmlspecialchars';
         $tmp = [];
         $callback = function($item,$key) use($filter,&$tmp){
             $tmp[$key] = call_user_func($filter,$item);
@@ -188,7 +186,6 @@ class Request
             }
         }
     }
-
 
     /**
      * [getData 获取数据]

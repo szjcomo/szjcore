@@ -1,59 +1,62 @@
 <?php
 /**
-*-----------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////
-//                          _ooOoo_                               //
-//                         o8888888o                              //
-//                         88" . "88                              //
-//                         (| ^_^ |)                              //
-//                         O\  =  /O                              //
-//                      ____/`---'\____                           //
-//                    .'  \|     |//  `.                         //
-//                   /  \|||  :  |||//  \                        //
-//                  /  _||||| -:- |||||-  \                       //
-//                  |   | \\  -  /// |   |                       //
-//                  | \_|  ''\---/''  |   |                       //
-//                  \  .-\__  `-`  ___/-. /                       //
-//                ___`. .'  /--.--\  `. . ___                     //
-//            \  \ `-.   \_ __\ /__ _/   .-` /  /                 //
-//      ========`-.____`-.___\_____/___.-`____.-'========         //
-//                           `=---='                              //
-//      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
-//         佛祖保佑       永无BUG       永不修改                    //
-////////////////////////////////////////////////////////////////////
-* @Copyright 思智捷科技(c) this is a snippet.
-* @Website: www.sizhijie.com
-* @Author : szjcomo 
-*-----------------------------------------------------------------------------------
-*/
-namespace szjcomo\szjcore;
+ * |-----------------------------------------------------------------------------------
+ * @Copyright (c) 2014-2018, http://www.sizhijie.com. All Rights Reserved.
+ * @Website: www.sizhijie.com
+ * @Version: 思智捷信息科技有限公司
+ * @Author : szjcomo 
+ * |-----------------------------------------------------------------------------------
+ */
+
+namespace szjcomo\szjcore\register;
 
 use EasySwoole\Component\Process\AbstractProcess;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\Utility\File;
+use EasySwoole\EasySwoole\Config;
 use EasySwoole\EasySwoole\Logger;
 use Swoole\Process;
 use Swoole\Table;
 use Swoole\Timer;
 
 /**
- * 暴力热重载
- * Class HotReload
- * @package App\Process
+ * 服务热重载
  */
-class HotReload extends AbstractProcess 
+class AppHotload extends AbstractProcess
 {
+
     protected $table;
     protected $isReady = false;
-    protected $monitorDir; // 需要监控的目录
-    protected $monitorExt; // 需要监控的后缀
-    /**
-     * 启动定时器进行循环扫描
-     */
+    protected $monitorDir; 	// 需要监控的目录
+    protected $monitorExt; 	// 需要监控的后缀
+
+	/**
+	 * [register 服务热重载注册]
+	 * @author 	   szjcomo
+	 * @createTime 2019-11-05
+	 * @return     [type]     [description]
+	 */
+	public static function register()
+	{
+		$isHotReloadStart 	= Config::getInstance()->getConf('APP_HOT_RELOAD_START');
+		if($isHotReloadStart === true) {
+			$options 		= Config::getInstance()->getConf('APP_HOT_RELOAD_CONFIG');
+			ServerManager::getInstance()->getSwooleServer()->addProcess((new static('HotReload', $options))->getProcess());
+		}
+        return true;
+	}
+
+	/**
+	 * [run 启动定时器进行循环扫描]
+	 * @author 	   szjcomo
+	 * @createTime 2019-11-05
+	 * @param      [type]     $arg [description]
+	 * @return     [type]          [description]
+	 */
     public function run($arg)
     {
         // 此处指定需要监视的目录 建议只监视App目录下的文件变更
-        $this->monitorDir = !empty($arg['monitorDir']) ? $arg['monitorDir'] : EASYSWOOLE_ROOT . '/Application';
+        $this->monitorDir = !empty($arg['monitorDir']) ? $arg['monitorDir'] : EASYSWOOLE_ROOT . '/app';
         // 指定需要监控的扩展名 不属于指定类型的的文件 无视变更 不重启
         $this->monitorExt = !empty($arg['monitorExt']) && is_array($arg['monitorExt']) ? $arg['monitorExt'] : ['php'];
         if (extension_loaded('inotify') && empty($arg['disableInotify'])) {
@@ -167,4 +170,5 @@ class HotReload extends AbstractProcess
             }
         });
     }
+
 }
