@@ -30,11 +30,11 @@ class AppMysql
 	{
 		$config = Config::getInstance()->getConf('MYSQL');
 		if($config['register_mysql'] === true){
-			$pool_arr = ['maxIdleTime'=>$config['maxIdleTime'],'maxObjectNum'=>$config['maxObjectNum'],'minObjectNum'=>$config['minObjectNum']];
+			$pool_arr = ['maxIdleTime'=>$config['maxIdleTime'],'maxObjectNum'=>$config['maxObjectNum'],'minObjectNum'=>$config['minObjectNum'],'intervalCheckTime'=>$config['intervalCheckTime']];
 			$pool_config = new PoolConfig($pool_arr);
 			foreach($config['connecConfigs'] as $key=>$val){
 				Manager::getInstance()->register(new MysqlPool($pool_config,$val),'mysql_'.$key);
-			}			
+			}
 		}
 		return true;
 	}
