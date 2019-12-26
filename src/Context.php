@@ -151,7 +151,7 @@ class Context
 		} else {
 			$res = $this->uploadsHandler($data,$options,$name);
 			if($res['err'] == true){
-				$tempName = $val->getTempName();
+				$tempName = $res->getTempName();
 				@unlink($tempName);
 			}
 			$result = $res;
