@@ -53,7 +53,7 @@ class Response
 			return $response->setCookie($name,$value,$expire,$path,$domain,$secure,$httponly);
 		}
 		$strValue = '';
-		if(!is_array($value) || !is_object($value)) {
+		if(is_array($value)) {
 			$value['___szjtype'] = 'json';
 			$strValue = json_encode($value,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		}

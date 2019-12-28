@@ -218,7 +218,7 @@ class Context
 				}
 				$action = $uploadFile->moveTo($map['savePath'].$map['saveName']);
 				if($action) {
-					$tmp = ['savePath'=>$map['savePath'],'saveName'=>$map['saveName'],'size'=>$fileSize,'type'=>$fileType,'ext'=>$ext,'inputName'=>$fileName];
+					$tmp = ['savePath'=>$map['savePath'],'saveName'=>$map['saveName'],'size'=>$fileSize,'type'=>$uploadFile->getClientMediaType(),'ext'=>$ext,'inputName'=>$fileName];
 					return $this->appResult('SUCCESS',$tmp,false);
 				} else {
 					return $this->appResult('文件移动失败,请进行权限检查');
