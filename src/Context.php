@@ -151,7 +151,7 @@ class Context
 		} else {
 			$res = $this->uploadsHandler($data,$options,$name);
 			if($res['err'] == true){
-				$tempName = $res->getTempName();
+				$tempName = $data->getTempName();
 				@unlink($tempName);
 			}
 			$result = $res;
@@ -186,17 +186,9 @@ class Context
 	public function uploadsHandler($uploadFile,$options = [],$fileName = '')
 	{
 		$defaultOptions = [
-			'limitSize'=>2*1024*1024,'savePath'=>'./','saveName'=>'','ext'=>['jpg','png','jpeg','gif','bmp'],
-			'fileType'=>['image/jpeg','image/png','image/gif','image/bmp','image/jpg','application/octet-stream'],
+			'limitSize'=>2*1024*1024,'savePath'=>'./','saveName'=>'','ext'=>['jpg','png','jpeg','gif','bmp']
 		];
-		$map = [];
-		foreach($defaultOptions as $key=>$val){
-			if(is_array($val)){
-				$map[$key] = array_merge($val,isset($options[$key])?$options[$key]:[]);
-			} else {
-				$map[$key] = isset($options[$key])?$options[$key]:$val;
-			}
-		}
+		$map = array_merge($default,$options);
 		try{
 			if(is_object($uploadFile)) {
 				$streamtmp = $uploadFile->getStream();
@@ -206,10 +198,6 @@ class Context
 				}
 				$ext = $this->getFileNameExt($uploadFile->getClientFilename());
 				if(!in_array($ext, $map['ext'])) {
-					return $this->appResult('上传的文件后缀不合法,请检查');
-				}
-				$fileType = $uploadFile->getClientMediaType();
-				if(!in_array($fileType,$map['fileType'])){
 					return $this->appResult('上传的文件类型不合法,请检查');
 				}
 				$file_exists_true = false;
