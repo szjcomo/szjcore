@@ -188,7 +188,7 @@ class Context
 		$defaultOptions = [
 			'limitSize'=>2*1024*1024,'savePath'=>'./','saveName'=>'','ext'=>['jpg','png','jpeg','gif','bmp']
 		];
-		$map = array_merge($default,$options);
+		$map = array_merge($defaultOptions,$options);
 		try{
 			if(is_object($uploadFile)) {
 				$streamtmp = $uploadFile->getStream();
